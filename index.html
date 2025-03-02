@@ -54,7 +54,7 @@
 <body>
     <div class="container">
         <h2>Marathon Pace Tracker</h2>
-        <p>Enter the time you see the runner at each lap:</p>
+        <p>Enter the time you see the runner at each checkpoint:</p>
         <input type="time" id="lapTime">
         <button onclick="addLapTime()">Add Lap Time</button>
         <table>
@@ -62,8 +62,10 @@
                 <tr>
                     <th>Lap</th>
                     <th>Time</th>
+                    <th>Lap Time</th>
+                    <th>Pace (min/mi)</th>
                     <th>Projected Finish</th>
-                    <th>Sub-3:00 Comparison</th>
+                    <th>+/- Sub-3:00 Pace</th>
                 </tr>
             </thead>
             <tbody id="lapTableBody">
@@ -72,8 +74,10 @@
     </div>
     <script>
         let lapTimes = [];
-        const totalLaps = 8;
-        const sub3PacePerLap = (180 / totalLaps).toFixed(2); // 180 mins total, divided by laps
+        const lapDistance = 2.96;
+        const totalDistance = 26.2;
+        const sub3TotalMinutes = 179.983; // 2:59:59 in minutes
+        const sub3PacePerMile = sub3TotalMinutes / totalDistance;
 
         function addLapTime() {
             const input = document.getElementById('lapTime');
@@ -98,18 +102,22 @@
             
             let totalElapsed = 0;
             lapTimes.forEach((time, index) => {
+                let lapElapsed = 0;
                 if (index > 0) {
-                    totalElapsed += (lapTimes[index] - lapTimes[index - 1]) / 60000;
+                    lapElapsed = (lapTimes[index] - lapTimes[index - 1]) / 60000; // Convert ms to minutes
+                    totalElapsed += lapElapsed;
                 }
-
-                let avgPace = (totalElapsed / (index + 1)).toFixed(2);
-                let projectedFinish = (avgPace * totalLaps).toFixed(2);
-                let comparison = (projectedFinish - 180).toFixed(2);
+                
+                let lapPace = lapElapsed / lapDistance;
+                let projectedFinish = (totalElapsed / ((index + 1) * lapDistance) * totalDistance).toFixed(2);
+                let comparison = (projectedFinish - sub3TotalMinutes).toFixed(2);
                 let comparisonText = comparison > 0 ? `+${comparison} min` : `${comparison} min`;
 
                 const row = `<tr>
                     <td>${index + 1}</td>
                     <td>${time.toLocaleTimeString()}</td>
+                    <td>${lapElapsed.toFixed(2)} min</td>
+                    <td>${(lapPace * 60).toFixed(2)}</td>
                     <td>${projectedFinish} min</td>
                     <td>${comparisonText}</td>
                 </tr>`;
