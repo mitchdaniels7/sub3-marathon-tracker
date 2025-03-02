@@ -55,7 +55,7 @@
     <div class="container">
         <h2>Marathon Pace Tracker</h2>
         <p>Enter the time you see the runner at each checkpoint:</p>
-        <input type="time" id="lapTime">
+        <input type="time" step="1" id="lapTime">
         <button onclick="addLapTime()">Add Lap Time</button>
         <table>
             <thead>
@@ -63,7 +63,7 @@
                     <th>Lap</th>
                     <th>Time</th>
                     <th>Lap Time</th>
-                    <th>Pace (min/mi)</th>
+                    <th>Pace</th>
                     <th>Projected Finish</th>
                     <th>+/- Sub-3:00 Pace</th>
                 </tr>
@@ -76,8 +76,8 @@
         let lapTimes = [];
         const lapDistance = 2.96;
         const totalDistance = 26.2;
-        const sub3TotalMinutes = 179.983; // 2:59:59 in minutes
-        const sub3PacePerMile = sub3TotalMinutes / totalDistance;
+        const sub3TotalSeconds = 10799; // 2:59:59 in seconds
+        const sub3PacePerMile = sub3TotalSeconds / totalDistance;
 
         function addLapTime() {
             const input = document.getElementById('lapTime');
@@ -96,6 +96,13 @@
             input.value = "";
         }
 
+        function formatTime(seconds) {
+            let h = Math.floor(seconds / 3600);
+            let m = Math.floor((seconds % 3600) / 60);
+            let s = Math.floor(seconds % 60);
+            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        }
+
         function updateTable() {
             const tableBody = document.getElementById('lapTableBody');
             tableBody.innerHTML = "";
@@ -104,21 +111,22 @@
             lapTimes.forEach((time, index) => {
                 let lapElapsed = 0;
                 if (index > 0) {
-                    lapElapsed = (lapTimes[index] - lapTimes[index - 1]) / 60000; // Convert ms to minutes
+                    lapElapsed = (lapTimes[index] - lapTimes[index - 1]) / 1000; // Convert ms to seconds
                     totalElapsed += lapElapsed;
                 }
                 
-                let lapPace = lapElapsed / lapDistance;
-                let projectedFinish = (totalElapsed / ((index + 1) * lapDistance) * totalDistance).toFixed(2);
-                let comparison = (projectedFinish - sub3TotalMinutes).toFixed(2);
-                let comparisonText = comparison > 0 ? `+${comparison} min` : `${comparison} min`;
+                let lapPacePerMile = lapElapsed / lapDistance;
+                let lapPacePerKm = lapPacePerMile / 1.609;
+                let projectedFinish = totalElapsed + ((totalDistance - ((index + 1) * lapDistance)) * lapPacePerMile);
+                let comparison = totalElapsed - ((index + 1) * lapDistance * sub3PacePerMile);
+                let comparisonText = comparison > 0 ? `+${formatTime(comparison)}` : `${formatTime(comparison)}`;
 
                 const row = `<tr>
                     <td>${index + 1}</td>
                     <td>${time.toLocaleTimeString()}</td>
-                    <td>${lapElapsed.toFixed(2)} min</td>
-                    <td>${(lapPace * 60).toFixed(2)}</td>
-                    <td>${projectedFinish} min</td>
+                    <td>${formatTime(lapElapsed)}</td>
+                    <td>${formatTime(lapPacePerKm)}/km | ${formatTime(lapPacePerMile)}/mi</td>
+                    <td>${formatTime(projectedFinish)}</td>
                     <td>${comparisonText}</td>
                 </tr>`;
                 
