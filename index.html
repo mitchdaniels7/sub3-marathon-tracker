@@ -74,7 +74,7 @@
     </div>
     <script>
         let lapTimes = [];
-        const lapDistance = 2.96;
+        const checkpointDistance = 1.0; // Friends are stationed at 1-mile mark
         const totalDistance = 26.2;
         const sub3TotalSeconds = 10799; // 2:59:59 in seconds
         const sub3PacePerMile = sub3TotalSeconds / totalDistance;
@@ -115,11 +115,14 @@
                     totalElapsed += lapElapsed;
                 }
                 
-                let lapPacePerMile = lapElapsed / lapDistance;
+                let lapPacePerMile = lapElapsed / checkpointDistance;
                 let lapPacePerKm = lapPacePerMile / 1.609;
-                let projectedFinish = totalElapsed + ((totalDistance - ((index + 1) * lapDistance)) * lapPacePerMile);
-                let comparison = totalElapsed - ((index + 1) * lapDistance * sub3PacePerMile);
-                let comparisonText = comparison > 0 ? `+${formatTime(comparison)}` : `${formatTime(comparison)}`;
+                let projectedFinish = totalElapsed + ((totalDistance - ((index + 1) * checkpointDistance)) * lapPacePerMile);
+                
+                // Expected elapsed time for a sub-3 marathon at this distance
+                let expectedElapsedTime = ((index + 1) * checkpointDistance) * sub3PacePerMile;
+                let comparison = totalElapsed - expectedElapsedTime;
+                let comparisonText = comparison > 0 ? `+${formatTime(comparison)}` : `-${formatTime(Math.abs(comparison))}`;
 
                 const row = `<tr>
                     <td>${index + 1}</td>
