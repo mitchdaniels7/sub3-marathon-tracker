@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marathon Pace Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Marathon Pace Tracker</h2>
+        <p>Enter the time you see the runner at each lap:</p>
+        <input type="time" id="lapTime">
+        <button onclick="addLapTime()">Add Lap Time</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Lap</th>
+                    <th>Time</th>
+                    <th>Projected Finish</th>
+                    <th>Sub-3:00 Comparison</th>
+                </tr>
+            </thead>
+            <tbody id="lapTableBody">
+            </tbody>
+        </table>
+    </div>
+    <script>
+        let lapTimes = [];
+        const totalLaps = 8;
+        const sub3PacePerLap = (180 / totalLaps).toFixed(2); // 180 mins total, divided by laps
+
+        function addLapTime() {
+            const input = document.getElementById('lapTime');
+            const timeValue = input.value;
+            if (!timeValue) return;
+            
+            const now = new Date();
+            const lapTime = new Date(`${now.toDateString()} ${timeValue}`);
+            if (lapTimes.length > 0 && lapTime <= lapTimes[lapTimes.length - 1]) {
+                alert("Each lap time must be later than the previous one.");
+                return;
+            }
+
+            lapTimes.push(lapTime);
+            updateTable();
+            input.value = "";
+        }
+
+        function updateTable() {
+            const tableBody = document.getElementById('lapTableBody');
+            tableBody.innerHTML = "";
+            
+            let totalElapsed = 0;
+            lapTimes.forEach((time, index) => {
+                if (index > 0) {
+                    totalElapsed += (lapTimes[index] - lapTimes[index - 1]) / 60000;
+                }
+
+                let avgPace = (totalElapsed / (index + 1)).toFixed(2);
+                let projectedFinish = (avgPace * totalLaps).toFixed(2);
+                let comparison = (projectedFinish - 180).toFixed(2);
+                let comparisonText = comparison > 0 ? `+${comparison} min` : `${comparison} min`;
+
+                const row = `<tr>
+                    <td>${index + 1}</td>
+                    <td>${time.toLocaleTimeString()}</td>
+                    <td>${projectedFinish} min</td>
+                    <td>${comparisonText}</td>
+                </tr>`;
+                
+                tableBody.innerHTML += row;
+            });
+        }
+    </script>
+</body>
+</html>
