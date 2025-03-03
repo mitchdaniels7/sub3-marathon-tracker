@@ -107,9 +107,10 @@
         }
 
         function formatTime(seconds) {
+            let h = Math.floor(seconds / 3600);
             let m = Math.floor((seconds % 3600) / 60);
             let s = Math.floor(seconds % 60);
-            return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         }
 
         function updateTable() {
@@ -119,11 +120,12 @@
             let totalDistanceCovered = 0;
 
             lapTimes.forEach((time, index) => {
-                let lapElapsed = index === 0 ? 0 : (lapTimes[index] - lapTimes[index - 1]) / 1000;
+                let lapElapsed = index === 0 ? checkpointDistance * sub3PacePerMile : (lapTimes[index] - lapTimes[index - 1]) / 1000;
+                totalElapsed += lapElapsed;
                 totalElapsed += lapElapsed;
                 totalDistanceCovered = checkpointDistance + (index * 2.96);
-                let lapPaceText = formatTime(lapElapsed / (index === 0 ? checkpointDistance : 2.96));
-                let avgPaceText = formatTime(totalElapsed / totalDistanceCovered);
+                let lapPaceText = index === 0 ? formatTime(lapElapsed / checkpointDistance) : formatTime(lapElapsed / 2.96);
+                let avgPaceText = index === 0 ? lapPaceText : formatTime(totalElapsed / totalDistanceCovered);
                 let projectedFinishElapsed = totalElapsed + ((totalDistance - totalDistanceCovered) * (totalElapsed / totalDistanceCovered));
                 let comparison = projectedFinishElapsed - sub3TotalSeconds;
                 let comparisonText = comparison > 0 ? `+${formatTime(comparison)}` : `-${formatTime(Math.abs(comparison))}`;
