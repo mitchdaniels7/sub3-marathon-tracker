@@ -142,7 +142,8 @@
                     avgPaceText = totalDistanceCovered > 0 ? formatPace(totalElapsed / totalDistanceCovered) : '-';
                 }
                 
-                let projectedFinishElapsed = totalElapsed + ((totalDistance - totalDistanceCovered) * (totalElapsed / (totalDistanceCovered > 0 ? totalDistanceCovered : 1)));
+                let avgPacePerMile = totalDistanceCovered > 0 ? totalElapsed / totalDistanceCovered : sub3PacePerMile;
+                let projectedFinishElapsed = totalElapsed + ((totalDistance - totalDistanceCovered) * avgPacePerMile);
                 let expectedElapsedTime = totalDistanceCovered * sub3PacePerMile;
                 let comparison = projectedFinishElapsed - sub3TotalSeconds;
                 let comparisonText = formatTime(Math.abs(comparison));
