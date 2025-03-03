@@ -57,13 +57,18 @@
         <p>Enter the time you see the runner at each checkpoint:</p>
         <input type="time" step="1" id="lapTime">
         <button onclick="addLapTime()">Add Lap Time</button>
+        <p>Enter checkpoint distance (miles):</p>
+        <input type="number" id="checkpointDistance" value="1.0" step="0.01">
+        <button onclick="updateCheckpointDistance()">Set Distance</button>
         <table>
             <thead>
                 <tr>
                     <th>Lap</th>
+                    <th>Elapsed Distance (mi)</th>
                     <th>Time</th>
                     <th>Lap Time</th>
-                    <th>Pace</th>
+                    <th>Lap Pace</th>
+                    <th>Avg Pace</th>
                     <th>Projected Finish</th>
                     <th>+/- Sub-3:00 Pace</th>
                 </tr>
@@ -74,10 +79,16 @@
     </div>
     <script>
         let lapTimes = [];
-        const checkpointDistance = 1.0; // Friends are stationed at 1-mile mark
+        let checkpointDistance = 1.0; // Default checkpoint distance
         const totalDistance = 26.2;
         const sub3TotalSeconds = 10799; // 2:59:59 in seconds
         const sub3PacePerMile = sub3TotalSeconds / totalDistance;
+
+        function updateCheckpointDistance() {
+    const input = document.getElementById('checkpointDistance').value;
+    checkpointDistance = Math.min(parseFloat(input) || 1.0, 2.96);
+            updateTable();
+        }
 
         function addLapTime() {
             const input = document.getElementById('lapTime');
@@ -103,32 +114,46 @@
             return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         }
 
+        function formatPace(secondsPerMile) {
+    let pacePerKm = secondsPerMile / 1.609;
+    let minPerMile = Math.floor(secondsPerMile / 60);
+    let secPerMile = Math.floor(secondsPerMile % 60);
+    let minPerKm = Math.floor(pacePerKm / 60);
+    let secPerKm = Math.floor(pacePerKm % 60);
+    return `${minPerKm}:${secPerKm.toString().padStart(2,'0')} /km | ${minPerMile}:${secPerMile.toString().padStart(2,'0')} /mi`;
+        }
+
         function updateTable() {
             const tableBody = document.getElementById('lapTableBody');
             tableBody.innerHTML = "";
             
             let totalElapsed = 0;
+            let totalDistanceCovered = 0;
             lapTimes.forEach((time, index) => {
                 let lapElapsed = 0;
+                let lapPaceText = "-";
+                let avgPaceText = "-";
                 if (index > 0) {
                     lapElapsed = (lapTimes[index] - lapTimes[index - 1]) / 1000; // Convert ms to seconds
                     totalElapsed += lapElapsed;
+                    totalDistanceCovered += checkpointDistance;
+                    lapPaceText = formatPace(lapElapsed / checkpointDistance);
+                    avgPaceText = formatPace(totalElapsed / totalDistanceCovered);
                 }
                 
-                let lapPacePerMile = lapElapsed / checkpointDistance;
-                let lapPacePerKm = lapPacePerMile / 1.609;
-                let projectedFinish = totalElapsed + ((totalDistance - ((index + 1) * checkpointDistance)) * lapPacePerMile);
-                
-                // Expected elapsed time for a sub-3 marathon at this distance
-                let expectedElapsedTime = ((index + 1) * checkpointDistance) * sub3PacePerMile;
-                let comparison = totalElapsed - expectedElapsedTime;
+                let projectedFinishElapsed = totalElapsed + ((totalDistance - totalDistanceCovered) * (totalElapsed / totalDistanceCovered));
+                let expectedElapsedTime = totalDistanceCovered * sub3PacePerMile;
+                let comparison = projectedFinishElapsed - sub3TotalSeconds;
                 let comparisonText = comparison > 0 ? `+${formatTime(comparison)}` : `-${formatTime(Math.abs(comparison))}`;
 
+                const elapsedDistance = checkpointDistance + ((index > 0) ? ((index) * 2.96) : 0);
                 const row = `<tr>
                     <td>${index + 1}</td>
+                    <td>${elapsedDistance.toFixed(2)}</td>
                     <td>${time.toLocaleTimeString()}</td>
                     <td>${formatTime(lapElapsed)}</td>
-                    <td>${formatTime(lapPacePerKm)}/km | ${formatTime(lapPacePerMile)}/mi</td>
+                    <td>${lapPaceText}</td>
+                    <td>${avgPaceText}</td>
                     <td>${formatTime(projectedFinish)}</td>
                     <td>${comparisonText}</td>
                 </tr>`;
