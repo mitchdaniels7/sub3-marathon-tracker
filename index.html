@@ -112,11 +112,13 @@
             input.value = "";
         }
 
-        function formatTime(seconds) {
+        function formatTime(seconds, forceHHMMSS = true) {
             let h = Math.floor(seconds / 3600);
             let m = Math.floor((seconds % 3600) / 60);
             let s = Math.floor(seconds % 60);
-            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            return forceHHMMSS || h > 0 
+                ? `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`
+                : `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         }
 
         let paceUnit = 'miles';
@@ -139,13 +141,13 @@
                 let totalDistanceCoveredKm = totalDistanceCovered * 1.609;
                 let lapPacePerMile = lapElapsed / (index === 0 ? checkpointDistance : 2.96);
                 let lapPacePerKm = lapPacePerMile / 1.609;
-                let lapPaceText = paceUnit === 'miles' ? `${formatTime(lapPacePerMile)} /mi` : `${formatTime(lapPacePerKm)} /km`;
+                let lapPaceText = paceUnit === 'miles' ? `${formatTime(lapPacePerMile, false)} /mi` : `${formatTime(lapPacePerKm, false)} /km`;
                 let avgPacePerMile = totalElapsed / totalDistanceCovered;
                 let avgPacePerKm = avgPacePerMile / 1.609;
-                let avgPaceText = paceUnit === 'miles' ? `${formatTime(avgPacePerMile)} /mi` : `${formatTime(avgPacePerKm)} /km`;
+                let avgPaceText = paceUnit === 'miles' ? `${formatTime(avgPacePerMile, false)} /mi` : `${formatTime(avgPacePerKm, false)} /km`;
                 let projectedFinishElapsed = totalDistanceCovered > 0 ? (totalElapsed / totalDistanceCovered) * totalDistance : totalElapsed;
                 let comparison = projectedFinishElapsed - sub3TotalSeconds;
-                let comparisonText = comparison > 0 ? `+${formatTime(comparison)}` : `-${formatTime(Math.abs(comparison))}`;
+                let comparisonText = comparison > 0 ? `+${formatTime(comparison, false)}` : `-${formatTime(Math.abs(comparison), false)}`;
                 
                 const row = `<tr>
                     <td>${index + 1}</td>
