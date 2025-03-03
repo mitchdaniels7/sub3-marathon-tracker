@@ -61,7 +61,7 @@
         <h2>Marathon Pace Tracker</h2>
         <button onclick="togglePaceUnit()">Toggle Pace: <span id='paceUnit'>Miles</span></button>
         <p>Enter the time you see the runner at each checkpoint:</p>
-        <input type="time" step="1" id="lapTime">
+        <input type="time" step="1" id="lapTime" value="08:00" onkeypress="if(event.key==='Enter'){ addLapTime(); }">
         <button onclick="addLapTime()">Add Lap Time</button>
         <p>Enter checkpoint distance (miles): <button onclick="togglePaceUnit()">Toggle Pace: <span id='paceUnit'>Miles</span></button></p>
         <input type="number" id="checkpointDistance" value="1.0" step="0.01" max="2.96">
@@ -70,7 +70,7 @@
             <thead>
                 <tr>
                     <th>Lap</th>
-                    <th style="width: 75px;">Elapsed Distance (mi)</th>
+                    <th style="width: 75px;">Elapsed Distance (<span id='distanceUnit'>mi</span>)</th>
                     <th>Time</th>
                     <th>Lap Time</th>
                     <th>Total Time</th>
@@ -136,19 +136,20 @@
                 let lapElapsed = index === 0 ? checkpointDistance * sub3PacePerMile : (lapTimes[index] - lapTimes[index - 1]) / 1000;
                 totalElapsed += lapElapsed;
                 totalDistanceCovered = checkpointDistance + (index * 2.96);
+                let totalDistanceCoveredKm = totalDistanceCovered * 1.609;
                 let lapPacePerMile = lapElapsed / (index === 0 ? checkpointDistance : 2.96);
                 let lapPacePerKm = lapPacePerMile / 1.609;
                 let lapPaceText = paceUnit === 'miles' ? `${formatTime(lapPacePerMile)} /mi` : `${formatTime(lapPacePerKm)} /km`;
                 let avgPacePerMile = totalElapsed / totalDistanceCovered;
                 let avgPacePerKm = avgPacePerMile / 1.609;
                 let avgPaceText = paceUnit === 'miles' ? `${formatTime(avgPacePerMile)} /mi` : `${formatTime(avgPacePerKm)} /km`;
-                let projectedFinishElapsed = totalDistanceCovered > 0 ? totalElapsed + ((totalDistance - totalDistanceCovered) * avgPacePerMile) : totalElapsed;
+                let projectedFinishElapsed = totalDistanceCovered > 0 ? (totalElapsed / totalDistanceCovered) * totalDistance : totalElapsed;
                 let comparison = projectedFinishElapsed - sub3TotalSeconds;
                 let comparisonText = comparison > 0 ? `+${formatTime(comparison)}` : `-${formatTime(Math.abs(comparison))}`;
                 
                 const row = `<tr>
                     <td>${index + 1}</td>
-                    <td>${totalDistanceCovered.toFixed(2)}</td>
+                    <td>${paceUnit === 'miles' ? totalDistanceCovered.toFixed(2) + ' mi' : totalDistanceCoveredKm.toFixed(2) + ' km'}</td>
                     <td>${time.toLocaleTimeString()}</td>
                     <td>${formatTime(lapElapsed)}</td>
                     <td>${formatTime(totalElapsed)}</td>
