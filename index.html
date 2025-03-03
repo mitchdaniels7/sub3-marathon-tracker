@@ -67,8 +67,9 @@
                     <th>Elapsed Distance (mi)</th>
                     <th>Time</th>
                     <th>Lap Time</th>
-                    <th>Lap Pace</th>
-                    <th>Avg Pace</th>
+                    <th>Total Time</th>
+                    <th style="width: 120px;">Lap Pace</th>
+                    <th style="width: 120px;">Total Avg Pace</th>
                     <th>Projected Finish</th>
                     <th>+/- Sub-3:00 Pace</th>
                 </tr>
@@ -137,23 +138,37 @@
                     lapElapsed = (lapTimes[index] - lapTimes[index - 1]) / 1000; // Convert ms to seconds
                     totalElapsed += lapElapsed;
                     totalDistanceCovered = checkpointDistance + ((index) * 2.96);
-                    lapPaceText = formatPace(lapElapsed / checkpointDistance);
-                    avgPaceText = formatPace(totalElapsed / totalDistanceCovered);
+                    lapPaceText = formatPace(lapElapsed / (index === 0 ? checkpointDistance : 2.96));
+                    avgPaceText = totalDistanceCovered > 0 ? formatPace(totalElapsed / totalDistanceCovered) : '-';
                 }
                 
-                let projectedFinishElapsed = totalDistanceCovered > 0 ? totalElapsed + ((totalDistance - totalDistanceCovered) * (totalElapsed / totalDistanceCovered)) : totalElapsed;
+                let projectedFinishElapsed = totalElapsed + ((totalDistance - totalDistanceCovered) * (totalElapsed / (totalDistanceCovered > 0 ? totalDistanceCovered : 1)));
                 let expectedElapsedTime = totalDistanceCovered * sub3PacePerMile;
                 let comparison = projectedFinishElapsed - sub3TotalSeconds;
+                let comparisonText = formatTime(Math.abs(comparison));
+                if (comparison > 0) comparisonText = '+' + comparisonText;
+                else comparisonText = '-' + comparisonText;
                 let comparisonText = comparison > 0 ? `+${formatTime(comparison)}` : `-${formatTime(Math.abs(comparison))}`;
 
                 const elapsedDistance = checkpointDistance + ((index > 0) ? ((index) * 2.96) : 0);
+                const totalTime = formatTime(totalElapsed);
                 const row = `<tr>
                     <td>${index + 1}</td>
                     <td>${elapsedDistance.toFixed(2)}</td>
                     <td>${time.toLocaleTimeString()}</td>
                     <td>${formatTime(lapElapsed)}</td>
-                    <td>${lapPaceText}</td>
-                    <td>${avgPaceText}</td>
+                    <td>${totalTime}</td>
+                    <td style='white-space: pre-line;'>${lapPaceText.replace(" | ", "
+")}</td>
+                    <td style='white-space: pre-line;'>${avgPaceText.replace(" | ", "
+")}</td>";
+                    <td>${elapsedDistance.toFixed(2)}</td>
+                    <td>${time.toLocaleTimeString()}</td>
+                    <td>${formatTime(lapElapsed)}</td>
+                    <td style='white-space: pre-line;'>${lapPaceText.replace(" | ", "
+")}</td>
+                    <td style='white-space: pre-line;'>${avgPaceText.replace(" | ", "
+")}</td>
                     <td>${formatTime(projectedFinishElapsed)}</td>
                     <td>${comparisonText}</td>
                 </tr>`;
