@@ -150,6 +150,7 @@
                 if (comparison > 0) comparisonText = '+' + comparisonText;
                 else comparisonText = '-' + comparisonText;
                 let comparisonText = comparison > 0 ? `+${formatTime(comparison)}` : `-${formatTime(Math.abs(comparison))}`;
+                if (isNaN(comparison)) comparisonText = '-';
                 if (isNaN(comparison)) comparisonText = '-'
                 if (isNaN(comparison)) comparisonText = '-'
                 if (isNaN(comparison)) comparisonText = '-';
@@ -169,6 +170,7 @@
                     <td>${formatTime(projectedFinishElapsed)}</td>
                     <td>${comparisonText}</td>
                 </tr>`;
+                tableBody.innerHTML += row;
                 tableBody.innerHTML += row;
                     <td>${time.toLocaleTimeString()}</td>
                     <td>${formatTime(lapElapsed)}</td>
