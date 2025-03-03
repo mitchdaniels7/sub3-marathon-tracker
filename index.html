@@ -129,7 +129,6 @@
             
             let totalElapsed = 0;
             let totalDistanceCovered = 0;
-            let totalDistanceCovered = 0;
             lapTimes.forEach((time, index) => {
                 let lapElapsed = 0;
                 let lapPaceText = "-";
@@ -155,7 +154,7 @@
                     <td>${formatTime(lapElapsed)}</td>
                     <td>${lapPaceText}</td>
                     <td>${avgPaceText}</td>
-                    <td>${formatTime(projectedFinish)}</td>
+                    <td>${formatTime(projectedFinishElapsed)}</td>
                     <td>${comparisonText}</td>
                 </tr>`;
                 
