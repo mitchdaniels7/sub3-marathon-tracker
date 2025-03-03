@@ -122,11 +122,16 @@
             lapTimes.forEach((time, index) => {
                 let lapElapsed = index === 0 ? checkpointDistance * sub3PacePerMile : (lapTimes[index] - lapTimes[index - 1]) / 1000;
                 totalElapsed += lapElapsed;
-                totalElapsed += lapElapsed;
                 totalDistanceCovered = checkpointDistance + (index * 2.96);
-                let lapPaceText = index === 0 ? formatTime(lapElapsed / checkpointDistance) : formatTime(lapElapsed / 2.96);
-                let avgPaceText = index === 0 ? lapPaceText : formatTime(totalElapsed / totalDistanceCovered);
-                let projectedFinishElapsed = totalElapsed + ((totalDistance - totalDistanceCovered) * (totalElapsed / totalDistanceCovered));
+                let lapPacePerMile = lapElapsed / (index === 0 ? checkpointDistance : 2.96);
+                let lapPacePerKm = lapPacePerMile / 1.609;
+                let lapPaceText = `${formatTime(lapPacePerMile)} /mi
+${formatTime(lapPacePerKm)} /km`;
+                let avgPacePerMile = totalElapsed / totalDistanceCovered;
+                let avgPacePerKm = avgPacePerMile / 1.609;
+                let avgPaceText = `${formatTime(avgPacePerMile)} /mi
+${formatTime(avgPacePerKm)} /km`;
+                let projectedFinishElapsed = totalDistanceCovered > 0 ? totalElapsed + ((totalDistance - totalDistanceCovered) * (totalElapsed / totalDistanceCovered)) : totalElapsed;
                 let comparison = projectedFinishElapsed - sub3TotalSeconds;
                 let comparisonText = comparison > 0 ? `+${formatTime(comparison)}` : `-${formatTime(Math.abs(comparison))}`;
                 
