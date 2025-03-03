@@ -113,9 +113,10 @@
         }
 
         function formatTime(seconds) {
+            let h = Math.floor(seconds / 3600);
             let m = Math.floor((seconds % 3600) / 60);
             let s = Math.floor(seconds % 60);
-            return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         }
 
         let paceUnit = 'miles';
@@ -141,7 +142,7 @@
                 let avgPacePerMile = totalElapsed / totalDistanceCovered;
                 let avgPacePerKm = avgPacePerMile / 1.609;
                 let avgPaceText = paceUnit === 'miles' ? `${formatTime(avgPacePerMile)} /mi` : `${formatTime(avgPacePerKm)} /km`;
-                let projectedFinishElapsed = totalDistanceCovered > 0 ? (totalElapsed / totalDistanceCovered) * totalDistance : totalElapsed;
+                let projectedFinishElapsed = totalDistanceCovered > 0 ? totalElapsed + ((totalDistance - totalDistanceCovered) * avgPacePerMile) : totalElapsed;
                 let comparison = projectedFinishElapsed - sub3TotalSeconds;
                 let comparisonText = comparison > 0 ? `+${formatTime(comparison)}` : `-${formatTime(Math.abs(comparison))}`;
                 
