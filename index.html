@@ -56,12 +56,12 @@
         }
     </style>
 </head>
-<body>
+<body onload='initializeLapTime()'>
     <div class="container">
         <h2>Marathon Pace Tracker</h2>
         <button onclick="togglePaceUnit()">Toggle Pace: <span id='paceUnit'>Miles</span></button>
         <p>Enter the time you see the runner at each checkpoint:</p>
-        <input type="time" step="1" id="lapTime" value="08:00" onkeypress="if(event.key==='Enter'){ addLapTime(); }">
+        <input type="time" step="1" id="lapTime" value=""> onkeypress="if(event.key==='Enter'){ addLapTime(); }">
         <button onclick="addLapTime()">Add Lap Time</button>
         <p>Enter checkpoint distance (miles): <button onclick="togglePaceUnit()">Toggle Pace: <span id='paceUnit'>Miles</span></button></p>
         <input type="number" id="checkpointDistance" value="1.0" step="0.01" max="2.96">
@@ -94,6 +94,11 @@
             const input = document.getElementById('checkpointDistance').value;
             checkpointDistance = Math.min(parseFloat(input) || 1.0, 2.96);
             updateTable();
+        }
+
+        function initializeLapTime() {
+            const now = new Date();
+            document.getElementById('lapTime').value = now.toTimeString().slice(0, 5);
         }
 
         function addLapTime() {
