@@ -150,12 +150,23 @@
                 if (comparison > 0) comparisonText = '+' + comparisonText;
                 else comparisonText = '-' + comparisonText;
                 let comparisonText = comparison > 0 ? `+${formatTime(comparison)}` : `-${formatTime(Math.abs(comparison))}`;
+                if (isNaN(comparison)) comparisonText = '-';
 
                 const elapsedDistance = checkpointDistance + ((index > 0) ? ((index) * 2.96) : 0);
                 const totalTime = formatTime(totalElapsed);
                 const row = `<tr>
                     <td>${index + 1}</td>
                     <td>${elapsedDistance.toFixed(2)}</td>
+                    <td>${time.toLocaleTimeString()}</td>
+                    <td>${formatTime(lapElapsed)}</td>
+                    <td>${totalTime}</td>
+                    <td style='white-space: pre-line;'>${lapPaceText.replace(" | ", "
+")}</td>
+                    <td style='white-space: pre-line;'>${avgPaceText.replace(" | ", "
+")}</td>
+                    <td>${formatTime(projectedFinishElapsed)}</td>
+                    <td>${comparisonText}</td>
+                </tr>`;
                     <td>${time.toLocaleTimeString()}</td>
                     <td>${formatTime(lapElapsed)}</td>
                     <td>${totalTime}</td>
