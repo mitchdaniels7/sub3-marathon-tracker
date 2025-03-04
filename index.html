@@ -137,13 +137,16 @@
             document.getElementById('distanceUnit').innerText = paceUnit === 'miles' ? 'Miles' : 'Kilometers';
             document.getElementById('milesBtn').classList.toggle('active', paceUnit === 'miles');
             document.getElementById('kmBtn').classList.toggle('active', paceUnit === 'km');
+            document.getElementById('kmBtn').classList.toggle('active', paceUnit === 'km');
             updateTable();
         }
 
         function updateTable() {
             const tableBody = document.getElementById('lapTableBody');
             tableBody.innerHTML = "";
-            if (lapTimes.length === 0) return;
+            if (lapTimes.length === 0) {
+                return;
+            }
             let totalElapsed = 0;
             let totalDistanceCovered = 0;
 
