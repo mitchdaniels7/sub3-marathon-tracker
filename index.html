@@ -161,13 +161,17 @@
                 if (lapElapsed < 0 || isNaN(lapElapsed)) lapElapsed = 0; // Prevents errors
                 totalElapsed += lapElapsed;
                 totalDistanceCovered = checkpointDistance + (index * 2.96);
+                totalDistanceCovered = paceUnit === 'miles' ? totalDistanceCovered : totalDistanceCovered * 1.609;
+                let totalDistanceCoveredConverted = paceUnit === 'miles' ? totalDistanceCovered : totalDistanceCovered * 1.609;
                 let totalDistanceCoveredKm = totalDistanceCovered * 1.609;
                 let lapPacePerMile = lapElapsed / (index === 0 ? checkpointDistance : 2.96);
                 let lapPacePerKm = lapPacePerMile / 1.609;
-                let lapPaceText = paceUnit === 'miles' ? `${formatTime(lapPacePerMile, false)} /mi` : `${formatTime(lapPacePerKm, false)} /km`;
+                let lapPaceConverted = paceUnit === 'miles' ? lapPacePerMile : lapPacePerMile / 1.609;
+                let lapPaceText = `${formatTime(lapPaceConverted, false)} ${paceUnit === 'miles' ? '/mi' : '/km'}`;
                 let avgPacePerMile = totalElapsed / totalDistanceCovered;
                 let avgPacePerKm = avgPacePerMile / 1.609;
-                let avgPaceText = paceUnit === 'miles' ? `${formatTime(avgPacePerMile, false)} /mi` : `${formatTime(avgPacePerKm, false)} /km`;
+                let avgPaceConverted = paceUnit === 'miles' ? avgPacePerMile : avgPacePerMile / 1.609;
+                let avgPaceText = `${formatTime(avgPaceConverted, false)} ${paceUnit === 'miles' ? '/mi' : '/km'}`;
                 let projectedFinishElapsed = totalDistanceCovered > 0 ? totalElapsed + ((totalDistance - totalDistanceCovered) * avgPacePerMile) : totalElapsed;
                 let comparison = projectedFinishElapsed - sub3TotalSeconds;
                 let comparisonText = comparison > 0 ? `+${formatTime(comparison, false)}` : `-${formatTime(Math.abs(comparison), false)}`;
