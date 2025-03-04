@@ -54,18 +54,20 @@
             background: #28a745;
             color: white;
         }
+            .active {
+            background: #1e7e34;
+        }
     </style>
 </head>
 <body onload='initializeLapTime()'>
     <div class="container">
         <h2>Marathon Pace Tracker</h2>
-        <button onclick="setPaceUnit('miles')">Miles</button>
-        <button onclick="setPaceUnit('km')">Kilometers</button>
+        <button id="milesBtn" onclick="setPaceUnit('miles')" class="active">Miles</button>
+        <button id="kmBtn" onclick="setPaceUnit('km')">Kilometers</button>
         <p>Enter the time you see the runner at each checkpoint:</p>
         <input type="time" step="1" id="lapTime" value="" onkeypress="if(event.key==='Enter'){ addLapTime(); }">
         <button onclick="addLapTime()">Add Lap Time</button>
-        <p>Enter checkpoint distance (miles): <button onclick="setPaceUnit('miles')">Miles</button>
-        <button onclick="setPaceUnit('km')">Kilometers</button></p>
+        <p>Enter checkpoint distance (miles):</p>
         <input type="number" id="checkpointDistance" value="1.0" step="0.01" max="2.96">
         <button onclick="updateCheckpointDistance()">Set Distance</button>
         <table>
@@ -133,20 +135,23 @@
             paceUnit = unit;
             document.getElementById('paceUnit').innerText = paceUnit === 'miles' ? 'Miles' : 'Kilometers';
             document.getElementById('distanceUnit').innerText = paceUnit === 'miles' ? 'Miles' : 'Kilometers';
+            document.getElementById('milesBtn').classList.toggle('active', paceUnit === 'miles');
+            document.getElementById('kmBtn').classList.toggle('active', paceUnit === 'km');
             updateTable();
         }
 
         function updateTable() {
             const tableBody = document.getElementById('lapTableBody');
             tableBody.innerHTML = "";
+            if (lapTimes.length === 0) return;
             let totalElapsed = 0;
             let totalDistanceCovered = 0;
 
             lapTimes.forEach((time, index) => {
                 let lapElapsed = index === 0 ? checkpointDistance * sub3PacePerMile : (lapTimes[index] - lapTimes[index - 1]) / 1000;
+                if (lapElapsed < 0 || isNaN(lapElapsed)) lapElapsed = 0; // Prevents errors
                 totalElapsed += lapElapsed;
                 totalDistanceCovered = checkpointDistance + (index * 2.96);
-                let totalDistanceCoveredKm = totalDistanceCovered * 1.609;
                 let totalDistanceCoveredKm = totalDistanceCovered * 1.609;
                 let lapPacePerMile = lapElapsed / (index === 0 ? checkpointDistance : 2.96);
                 let lapPacePerKm = lapPacePerMile / 1.609;
