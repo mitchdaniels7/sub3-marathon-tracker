@@ -113,6 +113,7 @@
             const now = new Date();
             const lapTime = new Date(`${now.toDateString()} ${timeValue}`);
             if (lapTimes.length > 0 && lapTime <= lapTimes[lapTimes.length - 1]) {
+                alert("Each lap time must be later than the previous one. If this is incorrect, please double-check the time format.");
                 alert("Each lap time must be later than the previous one.");
                 return;
             }
@@ -135,7 +136,10 @@
             paceUnit = unit;
             document.getElementById('paceUnit').innerText = paceUnit === 'miles' ? 'Miles' : 'Kilometers';
             document.getElementById('distanceUnit').innerText = paceUnit === 'miles' ? 'Miles' : 'Kilometers';
-            document.getElementById('milesBtn').classList.toggle('active', paceUnit === 'miles');
+            document.getElementById('milesBtn').classList.remove('active');
+            document.getElementById('kmBtn').classList.remove('active');
+            document.getElementById(unit + 'Btn').classList.add('active');
+            document.getElementById('kmBtn').classList.toggle('active', paceUnit === 'km');
             document.getElementById('kmBtn').classList.toggle('active', paceUnit === 'km');
             document.getElementById('kmBtn').classList.toggle('active', paceUnit === 'km');
             updateTable();
@@ -162,7 +166,7 @@
                 let avgPacePerMile = totalElapsed / totalDistanceCovered;
                 let avgPacePerKm = avgPacePerMile / 1.609;
                 let avgPaceText = paceUnit === 'miles' ? `${formatTime(avgPacePerMile, false)} /mi` : `${formatTime(avgPacePerKm, false)} /km`;
-                let projectedFinishElapsed = totalDistanceCovered > 0 ? (totalElapsed / totalDistanceCovered) * totalDistance : totalElapsed;
+                let projectedFinishElapsed = totalDistanceCovered > 0 ? totalElapsed + ((totalDistance - totalDistanceCovered) * avgPacePerMile) : totalElapsed;
                 let comparison = projectedFinishElapsed - sub3TotalSeconds;
                 let comparisonText = comparison > 0 ? `+${formatTime(comparison, false)}` : `-${formatTime(Math.abs(comparison), false)}`;
                 
