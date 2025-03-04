@@ -139,9 +139,10 @@
             document.getElementById('milesBtn').classList.remove('active');
             document.getElementById('kmBtn').classList.remove('active');
             document.getElementById(unit + 'Btn').classList.add('active');
-            document.getElementById('kmBtn').classList.toggle('active', paceUnit === 'km');
-            document.getElementById('kmBtn').classList.toggle('active', paceUnit === 'km');
-            document.getElementById('kmBtn').classList.toggle('active', paceUnit === 'km');
+            updateTable();
+            
+            
+            
             updateTable();
         }
 
