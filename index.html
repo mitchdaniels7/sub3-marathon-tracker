@@ -98,6 +98,7 @@
             const input = document.getElementById('checkpointDistance').value;
             checkpointDistance = Math.min(parseFloat(input) || 1.0, 2.96);
             updateTable();
+            lapTimes = [...lapTimes];
         }
 
         function initializeLapTime() {
@@ -119,6 +120,7 @@
             }
             lapTimes.push(lapTime);
             updateTable();
+            lapTimes = [...lapTimes];
             input.value = "";
         }
 
@@ -137,10 +139,12 @@
             document.getElementById('paceUnit').innerText = paceUnit === 'miles' ? 'Miles' : 'Kilometers';
             document.getElementById('distanceUnit').innerText = paceUnit === 'miles' ? 'Miles' : 'Kilometers';
             updateTable();
+            lapTimes = [...lapTimes];
             document.getElementById('milesBtn').classList.remove('active');
             document.getElementById('kmBtn').classList.remove('active');
             document.getElementById(unit + 'Btn').classList.add('active');
             updateTable();
+            lapTimes = [...lapTimes];
         }
 
         function updateTable() {
