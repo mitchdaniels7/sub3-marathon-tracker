@@ -195,6 +195,7 @@ function initializeLapTime() {
 function addLapTime() {
     const input = document.getElementById('lapTime');
     input.focus();
+    input.focus();
     if (currentRunner === 'All') {
         alert("Please select a specific runner to add lap times.");
         return;
@@ -309,12 +310,7 @@ function inlineEdit(name, index) {
     inputEl.style.display = 'inline';
     inputEl.focus();
   }
-}_${index}`);
-    if (displayEl) displayEl.style.display = 'none';
-    const inputEl = document.getElementById(`timeInput_${name}_${index}`);
-    if (inputEl) inputEl.style.display = 'inline';
-    const saveEl = document.getElementById(`saveBtn_${name}_${index}`);
-    if (saveEl) saveEl.style.display = 'inline';
+}
 }
 
 function saveEdit(name, index) {
