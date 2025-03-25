@@ -58,8 +58,8 @@
             background: #1e7e34;
         }
     </style>
-<script>
 </head>
+<script>
 <body onload='initializeLapTime()'>
     <div class="container">
         <label for="runnerSelect">Select Runner:</label>
@@ -114,7 +114,7 @@ let currentRunner = 'Mitch';
             const input = document.getElementById('checkpointDistance').value;
             checkpointDistance = Math.min(parseFloat(input) || 1.0, 2.96);
             updateTable();
-            lapTimes = [...lapTimes];
+            
         }
 
         function initializeLapTime() {
@@ -228,11 +228,11 @@ let currentRunner = 'Mitch';
             if (!newTimeStr) return;
             const now = new Date();
             const newTime = new Date(`${now.toDateString()} ${newTimeStr}`);
-            if (index > 0 && newTime <= lapTimes[index - 1]) {
+            if (index > 0 && newTime <= runners[currentRunner][index - 1]) {
                 alert("New time must be after the previous lap time.");
                 return;
             }
-            if (index < lapTimes.length - 1 && newTime >= lapTimes[index + 1]) {
+            if (index < runners[currentRunner].length - 1 && newTime >= runners[currentRunner][index + 1]) {
                 alert("New time must be before the next lap time.");
                 return;
             }
@@ -253,6 +253,5 @@ function changeRunner() {
             updateTable();
         }
     </script>
-</script>
 </body>
 </html>
