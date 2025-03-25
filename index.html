@@ -60,11 +60,14 @@ table {
     font-size: 0.9rem;
     table-layout: fixed;
     word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 th, td {
     border: 1px solid #ddd;
     padding: 0.6rem;
     text-align: center;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 th {
     background-color: #f0f0f0;
@@ -87,6 +90,17 @@ tr:nth-child(even) {
     .container {
         padding: 1rem;
     }
+    table {
+        display: table;
+        overflow-x: auto;
+        font-size: 0.8rem;
+    }
+    th, td {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+        word-break: break-word;
+    }
+}
     table {
         display: table;
         overflow-x: auto;
