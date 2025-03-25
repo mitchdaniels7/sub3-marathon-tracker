@@ -286,11 +286,8 @@ function updateTable() {
             <td>${index + 1} (${name})<span class='runner-badge ${name.toLowerCase()}'></span></td>
             <td>${displayDistance.toFixed(2)} ${paceUnit === 'miles' ? 'mi' : 'km'}</td>
             <td>
-                <span id="timeDisplay_${name}_${index}">${time.toLocaleTimeString()}</span>
-                <input type="time" id="timeInput_${name}_${index}" style="display:none"
-                       value="${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}:${time.getSeconds().toString().padStart(2, '0')}">
-                <button onclick="enableEdit('${name}', ${index})">Edit</button>
-                <button onclick="saveEdit('${name}', ${index})" style="display:none" id="saveBtn_${name}_${index}">Save</button>
+                <span id="timeDisplay_${name}_${index}" onclick="inlineEdit('${name}', ${index})" style="cursor: pointer; text-decoration: underline;">${time.toLocaleTimeString()}</span>
+<input type="time" id="timeInput_${name}_${index}" style="display:none" value="${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}:${time.getSeconds().toString().padStart(2, '0')}" onblur="saveEdit('${name}', ${index})" onkeydown="if(event.key==='Enter'){ saveEdit('${name}', ${index}); }">
             </td>
             <td>${formatTime(lapElapsed)}</td>
             <td>${formatTime(totalElapsed)}</td>
@@ -304,8 +301,15 @@ function updateTable() {
     });
 }
 
-function enableEdit(name, index) {
-    const displayEl = document.getElementById(`timeDisplay_${name}_${index}`);
+function inlineEdit(name, index) {
+  const displayEl = document.getElementById(`timeDisplay_${name}_${index}`);
+  const inputEl = document.getElementById(`timeInput_${name}_${index}`);
+  if (displayEl && inputEl) {
+    displayEl.style.display = 'none';
+    inputEl.style.display = 'inline';
+    inputEl.focus();
+  }
+}_${index}`);
     if (displayEl) displayEl.style.display = 'none';
     const inputEl = document.getElementById(`timeInput_${name}_${index}`);
     if (inputEl) inputEl.style.display = 'inline';
