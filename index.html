@@ -60,6 +60,7 @@
     </style>
 </head>
 <script>
+
 <body onload='initializeLapTime()'>
     <div class="container">
         <label for="runnerSelect">Select Runner:</label>
@@ -178,7 +179,7 @@ let currentRunner = 'Mitch';
             let totalDistanceCovered = 0;
 
             lapTimesToDisplay.forEach(({ name, time, index }, displayIndex) => {
-                let lapElapsed = index === 0 ? checkpointDistance * sub3PacePerMile : (lapTimes[index] - lapTimes[index - 1]) / 1000;
+                let lapElapsed = index === 0 ? checkpointDistance * sub3PacePerMile : (runners[name][index] - runners[name][index - 1]) / 1000;
                 if (lapElapsed < 0 || isNaN(lapElapsed)) lapElapsed = 0; // Prevents errors
                 totalElapsed += lapElapsed;
                 totalDistanceCovered = checkpointDistance + (index * 2.96);
