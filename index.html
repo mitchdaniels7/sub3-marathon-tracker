@@ -181,24 +181,25 @@ let currentRunner = 'Mitch';
                 if (lapElapsed < 0 || isNaN(lapElapsed)) lapElapsed = 0; // Prevents errors
                 totalElapsed += lapElapsed;
                 totalDistanceCovered = checkpointDistance + (index * 2.96);
-                totalDistanceCovered = paceUnit === 'miles' ? totalDistanceCovered : totalDistanceCovered * 1.609;
-                let totalDistanceCoveredConverted = paceUnit === 'miles' ? totalDistanceCovered : totalDistanceCovered * 1.609;
-                let totalDistanceCoveredKm = totalDistanceCovered * 1.609;
+                let displayDistance = paceUnit === 'miles' ? totalDistanceCovered : totalDistanceCovered * 1.609;
+                
                 let lapPacePerMile = lapElapsed / (index === 0 ? checkpointDistance : 2.96);
                 let lapPacePerKm = lapPacePerMile / 1.609;
-                let lapPaceConverted = paceUnit === 'miles' ? lapPacePerMile : lapPacePerMile / 1.609;
+                let lapPaceConverted = paceUnit === 'miles' ? lapPacePerMile : lapPacePerKm;
                 let lapPaceText = `${formatTime(lapPaceConverted, false)} ${paceUnit === 'miles' ? '/mi' : '/km'}`;
                 let avgPacePerMile = totalElapsed / totalDistanceCovered;
                 let avgPacePerKm = avgPacePerMile / 1.609;
-                let avgPaceConverted = paceUnit === 'miles' ? avgPacePerMile : avgPacePerMile / 1.609;
+                let avgPaceConverted = paceUnit === 'miles' ? avgPacePerMile : avgPacePerKm;
                 let avgPaceText = `${formatTime(avgPaceConverted, false)} ${paceUnit === 'miles' ? '/mi' : '/km'}`;
-                let projectedFinishElapsed = totalDistanceCovered > 0 ? totalElapsed + ((totalDistance - totalDistanceCovered) * avgPacePerMile) : totalElapsed;
+                let distanceRemaining = totalDistance - totalDistanceCovered;
+                if (paceUnit === 'km') distanceRemaining *= 1.609;
+                let projectedFinishElapsed = totalDistanceCovered > 0 ? totalElapsed + (distanceRemaining * avgPaceConverted) : totalElapsed;
                 let comparison = projectedFinishElapsed - sub3TotalSeconds;
                 let comparisonText = comparison > 0 ? `+${formatTime(comparison, false)}` : `-${formatTime(Math.abs(comparison), false)}`;
                 
                 const row = `<tr>
-                    <td>${displayIndex + 1} (${name})</td>
-                    <td>${paceUnit === 'miles' ? totalDistanceCovered.toFixed(2) + ' mi' : totalDistanceCoveredKm.toFixed(2) + ' km'}</td>
+                    <td>${index + 1} (${name})</td>
+                    <td>${displayDistance.toFixed(2)} ${paceUnit === 'miles' ? 'mi' : 'km'}</td>
                     <td>
                         <span id="timeDisplay${index}">${time.toLocaleTimeString()}</span>
                         <input type="time" id="timeInput${index}" style="display:none" value="${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}:${time.getSeconds().toString().padStart(2, '0')}">
