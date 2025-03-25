@@ -55,12 +55,12 @@ input[type="time"], input[type="number"], select {
 }
 table {
     width: 100%;
-    max-width: 100%;
-    overflow-x: auto;
-    display: block;
     border-collapse: collapse;
     margin-top: 1rem;
     font-size: 0.9rem;
+    overflow-x: auto;
+    table-layout: auto;
+    display: table;
 }
 th, td {
     border: 1px solid #ddd;
@@ -89,6 +89,14 @@ tr:nth-child(even) {
         display: block;
         overflow-x: auto;
     }
+    th, td {
+        font-size: 0.8rem;
+        padding: 0.5rem;
+    }
+    td::before {
+        content: none;
+    }
+}
     thead tr {
         display: table-row;
     }
