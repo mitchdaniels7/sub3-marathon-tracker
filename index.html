@@ -59,9 +59,8 @@
         }
     </style>
 </head>
-<script>
-
 <body onload='initializeLapTime()'>
+<script>
     <div class="container">
         <label for="runnerSelect">Select Runner:</label>
         <select id="runnerSelect" onchange="changeRunner()">
@@ -137,7 +136,6 @@ let currentRunner = 'Mitch';
             if (runners[currentRunner].length > 0 && lapTime <= runners[currentRunner][runners[currentRunner].length - 1]) {
                 alert("Each lap time must be later than the previous one. If this is incorrect, please double-check the time format.");
                 return;
-            }
             }
             runners[currentRunner].push(lapTime);
             updateTable();
