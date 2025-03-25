@@ -87,12 +87,23 @@ th {
   position: sticky;
   top: 0;
   z-index: 1;
+  padding: 0.6rem;
+  text-align: center;
+  vertical-align: middle;
+  font-weight: bold;
 }
 tr:hover {
   background-color: #f0f9ff;
 }
 
 tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+tr:hover {
+  background-color: #e0f7fa;
+  cursor: pointer;
+}
   background-color: #fafafa;
 }
 .runner-badge {
@@ -309,6 +320,9 @@ function inlineEdit(name, index) {
     displayEl.style.display = 'none';
     inputEl.style.display = 'inline';
     inputEl.focus();
+    inputEl.style.backgroundColor = '#fff3e0'; // Highlight the field
+  }
+}
   }
 }
 }
@@ -332,6 +346,11 @@ function saveEdit(name, index) {
 }
 
 function deleteLap(name, index) {
+  if (confirm('Are you sure you want to delete this lap time?')) {
+    runners[name].splice(index, 1);
+    updateTable();
+  }
+}
     runners[name].splice(index, 1);
     updateTable();
 }
