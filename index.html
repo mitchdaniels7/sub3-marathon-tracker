@@ -14,12 +14,15 @@ body {
     color: #333;
 }
 .container {
-    max-width: 600px;
+    max-width: 100%;
+    width: 100%;
     margin: 2rem auto;
     background: #fff;
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    overflow-x: auto;
+    box-sizing: border-box;
 }
 h2 {
     margin-top: 0;
@@ -52,6 +55,9 @@ input[type="time"], input[type="number"], select {
 }
 table {
     width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    display: block;
     border-collapse: collapse;
     margin-top: 1rem;
     font-size: 0.9rem;
@@ -79,9 +85,21 @@ tr:nth-child(even) {
 .derek { background-color: #ffc107; }
 .mitch { background-color: #6f42c1; }
 @media (max-width: 600px) {
-    table, thead, tbody, th, td, tr {
+    table {
         display: block;
+        overflow-x: auto;
     }
+    thead tr {
+        display: table-row;
+    }
+    th, td {
+        font-size: 0.8rem;
+        padding: 0.5rem;
+    }
+    td::before {
+        content: none;
+    }
+}
     thead tr {
         display: none;
     }
