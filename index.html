@@ -176,7 +176,12 @@
                 const row = `<tr>
                     <td>${index + 1}</td>
                     <td>${paceUnit === 'miles' ? totalDistanceCovered.toFixed(2) + ' mi' : totalDistanceCoveredKm.toFixed(2) + ' km'}</td>
-                    <td>${time.toLocaleTimeString()}</td>
+                    <td>
+                        <span id="timeDisplay${index}">${time.toLocaleTimeString()}</span>
+                        <input type="time" id="timeInput${index}" style="display:none" value="${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}:${time.getSeconds().toString().padStart(2, '0')}">
+                        <button onclick="enableEdit(${index})">Edit</button>
+                        <button onclick="saveEdit(${index})" style="display:none" id="saveBtn${index}">Save</button>
+                    </td>
                     <td>${formatTime(lapElapsed)}</td>
                     <td>${formatTime(totalElapsed)}</td>
                     <td>${lapPaceText}</td>
@@ -187,6 +192,27 @@
                 tableBody.innerHTML += row;
             });
         }
-    </script>
+    function enableEdit(index) {
+            document.getElementById(`timeDisplay${index}`).style.display = 'none';
+            document.getElementById(`timeInput${index}`).style.display = 'inline';
+            document.getElementById(`saveBtn${index}`).style.display = 'inline';
+        }
+
+        function saveEdit(index) {
+            const newTimeStr = document.getElementById(`timeInput${index}`).value;
+            if (!newTimeStr) return;
+            const now = new Date();
+            const newTime = new Date(`${now.toDateString()} ${newTimeStr}`);
+            if (index > 0 && newTime <= lapTimes[index - 1]) {
+                alert("New time must be after the previous lap time.");
+                return;
+            }
+            if (index < lapTimes.length - 1 && newTime >= lapTimes[index + 1]) {
+                alert("New time must be before the next lap time.");
+                return;
+            }
+            lapTimes[index] = newTime;
+            updateTable();
+        }
 </body>
 </html>
