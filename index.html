@@ -61,6 +61,14 @@
 </head>
 <body onload='initializeLapTime()'>
     <div class="container">
+        <label for="runnerSelect">Select Runner:</label>
+        <select id="runnerSelect" onchange="changeRunner()">
+            <option value="Brandon">Brandon</option>
+            <option value="Claire">Claire</option>
+            <option value="Derek">Derek</option>
+            <option value="Mitch" selected>Mitch</option>
+            <option value="All">All</option>
+        </select>
         <h2>Marathon Pace Tracker</h2>
         <button id="milesBtn" onclick="setPaceUnit('miles')" class="active">Miles</button>
         <button id="kmBtn" onclick="setPaceUnit('km')">Kilometers</button>
@@ -87,8 +95,15 @@
             <tbody id="lapTableBody"></tbody>
         </table>
     </div>
-    <script>
-        let lapTimes = [];
+    
+        let runners = {
+    Brandon: [],
+    Claire: [],
+    Derek: [],
+    Mitch: []
+};
+let currentRunner = 'Mitch';
+// removed stale reference to lapTimes
         let checkpointDistance = 1.0;
         const totalDistance = 26.2;
         const sub3TotalSeconds = 10799;
@@ -107,18 +122,22 @@
         }
 
         function addLapTime() {
+            if (currentRunner === 'All') {
+                alert("Please select a specific runner to add lap times.");
+                return;
+            }
             const input = document.getElementById('lapTime');
             const timeValue = input.value;
             if (!timeValue) return;
             
             const now = new Date();
             const lapTime = new Date(`${now.toDateString()} ${timeValue}`);
-            if (lapTimes.length > 0 && lapTime <= lapTimes[lapTimes.length - 1]) {
+            if (runners[currentRunner].length > 0 && lapTime <= runners[currentRunner][runners[currentRunner].length - 1]) {
                 alert("Each lap time must be later than the previous one. If this is incorrect, please double-check the time format.");
-                alert("Each lap time must be later than the previous one.");
                 return;
             }
-            lapTimes.push(lapTime);
+            }
+            runners[currentRunner].push(lapTime);
             updateTable();
             const updatedNow = new Date();
             input.value = updatedNow.toTimeString().slice(0, 5);
@@ -145,15 +164,19 @@
         }
 
         function updateTable() {
+            let lapTimesToDisplay = currentRunner === 'All' 
+                ? Object.entries(runners).flatMap(([name, laps]) => laps.map((time, index) => ({ name, time, index })))
+                    .sort((a, b) => a.time - b.time)
+                : runners[currentRunner].map((time, index) => ({ name: currentRunner, time, index }));
             const tableBody = document.getElementById('lapTableBody');
             tableBody.innerHTML = "";
-            if (lapTimes.length === 0) {
+            if (lapTimesToDisplay.length === 0) {
                 return;
             }
             let totalElapsed = 0;
             let totalDistanceCovered = 0;
 
-            lapTimes.forEach((time, index) => {
+            lapTimesToDisplay.forEach(({ name, time, index }, displayIndex) => {
                 let lapElapsed = index === 0 ? checkpointDistance * sub3PacePerMile : (lapTimes[index] - lapTimes[index - 1]) / 1000;
                 if (lapElapsed < 0 || isNaN(lapElapsed)) lapElapsed = 0; // Prevents errors
                 totalElapsed += lapElapsed;
@@ -174,7 +197,7 @@
                 let comparisonText = comparison > 0 ? `+${formatTime(comparison, false)}` : `-${formatTime(Math.abs(comparison), false)}`;
                 
                 const row = `<tr>
-                    <td>${index + 1}</td>
+                    <td>${displayIndex + 1} (${name})</td>
                     <td>${paceUnit === 'miles' ? totalDistanceCovered.toFixed(2) + ' mi' : totalDistanceCoveredKm.toFixed(2) + ' km'}</td>
                     <td>
                         <span id="timeDisplay${index}">${time.toLocaleTimeString()}</span>
@@ -188,6 +211,7 @@
                     <td>${avgPaceText}</td>
                     <td>${formatTime(projectedFinishElapsed)}</td>
                     <td>${comparisonText}</td>
+<td><button onclick="deleteLap(${index})">Delete</button></td>
                 </tr>`;
                 tableBody.innerHTML += row;
             });
@@ -211,8 +235,23 @@
                 alert("New time must be before the next lap time.");
                 return;
             }
-            lapTimes[index] = newTime;
+            runners[currentRunner][index] = newTime;
             updateTable();
         }
+<script>
+        function changeRunner() {
+            currentRunner = document.getElementById('runnerSelect').value;
+            updateTable();
+        }
+
+        function deleteLap(index) {
+            if (currentRunner === 'All') {
+                alert("Switch to a specific runner to delete a lap.");
+                return;
+            }
+            runners[currentRunner].splice(index, 1);
+            updateTable();
+        }
+    </script>
 </body>
 </html>
