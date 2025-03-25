@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Marathon Pace Tracker</title>
     <style>
-$1
+
         .runner-badge {
             display: inline-block;
             width: 10px;
@@ -76,7 +76,7 @@ function updateCheckpointDistance() {
 
 function initializeLapTime() {
     const now = new Date();
-    document.getElementById('lapTime').value = now.toTimeString().slice(0, 5);
+    document.getElementById('lapTime').value = now.toTimeString().slice(0, 8);
 }
 
 function addLapTime() {
@@ -190,9 +190,12 @@ function updateTable() {
 }
 
 function enableEdit(name, index) {
-    document.getElementById(`timeDisplay_${name}_${index}`).style.display = 'none';
-    document.getElementById(`timeInput_${name}_${index}`).style.display = 'inline';
-    document.getElementById(`saveBtn_${name}_${index}`).style.display = 'inline';
+    const displayEl = document.getElementById(`timeDisplay_${name}_${index}`);
+    if (displayEl) displayEl.style.display = 'none';
+    const inputEl = document.getElementById(`timeInput_${name}_${index}`);
+    if (inputEl) inputEl.style.display = 'inline';
+    const saveEl = document.getElementById(`saveBtn_${name}_${index}`);
+    if (saveEl) saveEl.style.display = 'inline';
 }
 
 function saveEdit(name, index) {
