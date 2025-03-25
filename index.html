@@ -56,143 +56,146 @@ $1
         </table>
 </div>
 <script>
-    
-        let runners = {
+let runners = {
     Brandon: [],
     Claire: [],
     Derek: [],
     Mitch: []
 };
 let currentRunner = 'Mitch';
-// removed stale reference to lapTimes
-        let checkpointDistance = 1.0;
-        const totalDistance = 26.2;
-        const sub3TotalSeconds = 10799;
-        const sub3PacePerMile = sub3TotalSeconds / totalDistance;
+let checkpointDistance = 1.0;
+const totalDistance = 26.2;
+const sub3TotalSeconds = 10799;
+const sub3PacePerMile = sub3TotalSeconds / totalDistance;
 
-        function updateCheckpointDistance() {
-            const input = document.getElementById('checkpointDistance').value;
-            checkpointDistance = Math.min(parseFloat(input) || 1.0, 2.96);
-            updateTable();
-            
-        }
+function updateCheckpointDistance() {
+    const input = document.getElementById('checkpointDistance').value;
+    checkpointDistance = Math.min(parseFloat(input) || 1.0, 2.96);
+    updateTable();
+}
 
-        function initializeLapTime() {
-            const now = new Date();
-            document.getElementById('lapTime').value = now.toTimeString().slice(0, 5);
-        }
+function initializeLapTime() {
+    const now = new Date();
+    document.getElementById('lapTime').value = now.toTimeString().slice(0, 5);
+}
 
-        function addLapTime() {
-            if (currentRunner === 'All') {
-                alert("Please select a specific runner to add lap times.");
-                return;
-            }
-            const input = document.getElementById('lapTime');
-            const timeValue = input.value;
-            if (!timeValue) return;
-            
-            const now = new Date();
-            const lapTime = new Date(`${now.toDateString()} ${timeValue}`);
-            if (runners[currentRunner].length > 0 && lapTime <= runners[currentRunner][runners[currentRunner].length - 1]) {
-                alert("Each lap time must be later than the previous one. If this is incorrect, please double-check the time format.");
-                return;
-            }
-            runners[currentRunner].push(lapTime);
-            updateTable();
-            const updatedNow = new Date();
-            input.value = updatedNow.toTimeString().slice(0, 5);
-        }
+function addLapTime() {
+    if (currentRunner === 'All') {
+        alert("Please select a specific runner to add lap times.");
+        return;
+    }
+    const input = document.getElementById('lapTime');
+    const timeValue = input.value;
+    if (!timeValue) return;
 
-        function formatTime(seconds, forceHHMMSS = true) {
-            let h = Math.floor(seconds / 3600);
-            let m = Math.floor((seconds % 3600) / 60);
-            let s = Math.floor(seconds % 60);
-            return forceHHMMSS || h > 0 
-                ? `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`
-                : `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        }
+    const now = new Date();
+    const lapTime = new Date(`${now.toDateString()} ${timeValue}`);
+    if (runners[currentRunner].length > 0 && lapTime <= runners[currentRunner][runners[currentRunner].length - 1]) {
+        alert("Each lap time must be later than the previous one.");
+        return;
+    }
+    runners[currentRunner].push(lapTime);
+    updateTable();
+    const updatedNow = new Date();
+    input.value = updatedNow.toTimeString().slice(0, 5);
+}
 
-        let paceUnit = 'miles';
-        function setPaceUnit(unit) {
-            paceUnit = unit;
-            document.getElementById('paceUnit').innerText = paceUnit === 'miles' ? 'Miles' : 'Kilometers';
-            document.getElementById('distanceUnit').innerText = paceUnit === 'miles' ? 'Miles' : 'Kilometers';
-            document.getElementById('milesBtn').classList.remove('active');
-            document.getElementById('kmBtn').classList.remove('active');
-            document.getElementById(unit + 'Btn').classList.add('active');
-            updateTable(); // Ensure table updates immediately when toggling units
-        }
+function formatTime(seconds, forceHHMMSS = true) {
+    let h = Math.floor(seconds / 3600);
+    let m = Math.floor((seconds % 3600) / 60);
+    let s = Math.floor(seconds % 60);
+    return forceHHMMSS || h > 0
+        ? `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`
+        : `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+}
 
-        function updateTable() {
-            let lapTimesToDisplay = currentRunner === 'All' 
-                ? Object.entries(runners).flatMap(([name, laps]) => laps.map((time, index) => ({ name, time, index })))
-                    .sort((a, b) => a.time - b.time)
-                : runners[currentRunner].map((time, index) => ({ name: currentRunner, time, index }));
-            const tableBody = document.getElementById('lapTableBody');
-            tableBody.innerHTML = "";
-            if (lapTimesToDisplay.length === 0) {
-                return;
-            }
-            let totalElapsed = 0;
-            let totalDistanceCovered = 0;
+let paceUnit = 'miles';
+function setPaceUnit(unit) {
+    paceUnit = unit;
+    document.getElementById('distanceUnit').innerText = paceUnit === 'miles' ? 'Miles' : 'Kilometers';
+    document.getElementById('milesBtn').classList.remove('active');
+    document.getElementById('kmBtn').classList.remove('active');
+    document.getElementById(unit + 'Btn').classList.add('active');
+    updateTable();
+}
 
-            lapTimesToDisplay.forEach(({ name, time, index }, displayIndex) => {
-                let lapElapsed = index === 0 ? checkpointDistance * sub3PacePerMile : (runners[name][index] - runners[name][index - 1]) / 1000;
-                if (lapElapsed < 0 || isNaN(lapElapsed)) lapElapsed = 0; // Prevents errors
-                totalElapsed += lapElapsed;
-                totalDistanceCovered = checkpointDistance + (index * 2.96);
-                let displayDistance = paceUnit === 'miles' ? totalDistanceCovered : totalDistanceCovered * 1.609;
-                
-                let lapPacePerMile = lapElapsed / (index === 0 ? checkpointDistance : 2.96);
-                let lapPacePerKm = lapPacePerMile / 1.609;
-                let lapPaceConverted = paceUnit === 'miles' ? lapPacePerMile : lapPacePerKm;
-                let lapPaceText = `${formatTime(lapPaceConverted, false)} ${paceUnit === 'miles' ? '/mi' : '/km'}`;
-                let avgPacePerMile = totalElapsed / totalDistanceCovered;
-                let avgPacePerKm = avgPacePerMile / 1.609;
-                let avgPaceConverted = paceUnit === 'miles' ? avgPacePerMile : avgPacePerKm;
-                let avgPaceText = `${formatTime(avgPaceConverted, false)} ${paceUnit === 'miles' ? '/mi' : '/km'}`;
-                let distanceRemaining = totalDistance - totalDistanceCovered;
-                if (paceUnit === 'km') distanceRemaining *= 1.609;
-                let projectedFinishElapsed = totalDistanceCovered > 0 ? totalElapsed + (distanceRemaining * avgPaceConverted) : totalElapsed;
-                let comparison = projectedFinishElapsed - sub3TotalSeconds;
-                let comparisonText = comparison > 0 ? `+${formatTime(comparison, false)}` : `-${formatTime(Math.abs(comparison), false)}`;
-                
-                const row = `<tr>
-                    <td>${index + 1} (${name})<span class='runner-badge ${name.toLowerCase()}'></span></td>
-                    <td>${displayDistance.toFixed(2)} ${paceUnit === 'miles' ? 'mi' : 'km'}</td>
-                    <td>
-                        <span id="timeDisplay_${name}_${index}">${time.toLocaleTimeString()}</span>
-                        <input type="time" id="timeInput_${name}_${index}" style="display:none" value="${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}:${time.getSeconds().toString().padStart(2, '0')}">
-                        <button onclick="enableEdit('${name}', ${index})">Edit</button>
-                        <button onclick="saveEdit('${name}', ${index})" style="display:none" id="saveBtn_${name}_${index}">Save</button>
-                    </td>
-                    <td>${formatTime(lapElapsed)}</td>
-                    <td>${formatTime(totalElapsed)}</td>
-                    <td>${lapPaceText}</td>
-                    <td>${avgPaceText}</td>
-                    <td>${formatTime(projectedFinishElapsed)}</td>
-                    <td>${comparisonText}</td>
-<td><button onclick="deleteLap('${name}', ${index})">Delete</button></td>
-                </tr>`;
-                tableBody.innerHTML += row;
-            });
-        }
-    function enableEdit(name, index) {
+function changeRunner() {
+    currentRunner = document.getElementById('runnerSelect').value;
+    updateTable();
+}
+
+function updateTable() {
+    let lapTimesToDisplay = currentRunner === 'All'
+        ? Object.entries(runners).flatMap(([name, laps]) =>
+            laps.map((time, index) => ({ name, time, index }))).sort((a, b) => a.time - b.time)
+        : runners[currentRunner].map((time, index) => ({ name: currentRunner, time, index }));
+
+    const tableBody = document.getElementById('lapTableBody');
+    tableBody.innerHTML = "";
+    if (lapTimesToDisplay.length === 0) return;
+
+    let totalElapsed = 0;
+    let totalDistanceCovered = 0;
+
+    lapTimesToDisplay.forEach(({ name, time, index }, displayIndex) => {
+        let lapElapsed = index === 0 ? checkpointDistance * sub3PacePerMile
+                                     : (runners[name][index] - runners[name][index - 1]) / 1000;
+        if (lapElapsed < 0 || isNaN(lapElapsed)) lapElapsed = 0;
+        totalElapsed += lapElapsed;
+        totalDistanceCovered = checkpointDistance + (index * 2.96);
+        let displayDistance = paceUnit === 'miles' ? totalDistanceCovered : totalDistanceCovered * 1.609;
+
+        let lapPacePerMile = lapElapsed / (index === 0 ? checkpointDistance : 2.96);
+        let lapPacePerKm = lapPacePerMile / 1.609;
+        let lapPaceConverted = paceUnit === 'miles' ? lapPacePerMile : lapPacePerKm;
+        let lapPaceText = `${formatTime(lapPaceConverted, false)} ${paceUnit === 'miles' ? '/mi' : '/km'}`;
+
+        let avgPacePerMile = totalElapsed / totalDistanceCovered;
+        let avgPacePerKm = avgPacePerMile / 1.609;
+        let avgPaceConverted = paceUnit === 'miles' ? avgPacePerMile : avgPacePerKm;
+        let avgPaceText = `${formatTime(avgPaceConverted, false)} ${paceUnit === 'miles' ? '/mi' : '/km'}`;
+
+        let distanceRemaining = totalDistance - totalDistanceCovered;
+        if (paceUnit === 'km') distanceRemaining *= 1.609;
+
+        let projectedFinishElapsed = totalDistanceCovered > 0
+            ? totalElapsed + (distanceRemaining * avgPaceConverted)
+            : totalElapsed;
+
+        let comparison = projectedFinishElapsed - sub3TotalSeconds;
+        let comparisonText = comparison > 0
+            ? `+${formatTime(comparison, false)}`
+            : `-${formatTime(Math.abs(comparison), false)}`;
+
+        const row = `<tr>
+            <td>${index + 1} (${name})<span class='runner-badge ${name.toLowerCase()}'></span></td>
+            <td>${displayDistance.toFixed(2)} ${paceUnit === 'miles' ? 'mi' : 'km'}</td>
+            <td>
+                <span id="timeDisplay_${name}_${index}">${time.toLocaleTimeString()}</span>
+                <input type="time" id="timeInput_${name}_${index}" style="display:none"
+                       value="${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}:${time.getSeconds().toString().padStart(2, '0')}">
+                <button onclick="enableEdit('${name}', ${index})">Edit</button>
+                <button onclick="saveEdit('${name}', ${index})" style="display:none" id="saveBtn_${name}_${index}">Save</button>
+            </td>
+            <td>${formatTime(lapElapsed)}</td>
+            <td>${formatTime(totalElapsed)}</td>
+            <td>${lapPaceText}</td>
+            <td>${avgPaceText}</td>
+            <td>${formatTime(projectedFinishElapsed)}</td>
+            <td>${comparisonText}</td>
+            <td><button onclick="deleteLap('${name}', ${index})">Delete</button></td>
+        </tr>`;
+        tableBody.innerHTML += row;
+    });
+}
+
+function enableEdit(name, index) {
     document.getElementById(`timeDisplay_${name}_${index}`).style.display = 'none';
     document.getElementById(`timeInput_${name}_${index}`).style.display = 'inline';
     document.getElementById(`saveBtn_${name}_${index}`).style.display = 'inline';
-}}`).style.display = 'none';
-    document.getElementById(`timeInput_${name}_${index}`).style.display = 'inline';
-    document.getElementById(`saveBtn_${name}_${index}`).style.display = 'inline';
-}_${index}`).style.display = 'none';
-    document.getElementById(`timeInput_${name}_${index}`).style.display = 'inline';
-    document.getElementById(`saveBtn_${name}_${index}`).style.display = 'inline';
-}`).style.display = 'none';
-            document.getElementById(`timeInput${index}`).style.display = 'inline';
-            document.getElementById(`saveBtn${index}`).style.display = 'inline';
-        }
+}
 
-        function saveEdit(name, index) {
+function saveEdit(name, index) {
     const input = document.getElementById(`timeInput_${name}_${index}`);
     const newTimeStr = input.value;
     if (!newTimeStr) return;
@@ -208,59 +211,12 @@ let currentRunner = 'Mitch';
     }
     runners[name][index] = newTime;
     updateTable();
-}}`);
-    const newTimeStr = input.value;
-    if (!newTimeStr) return;
-    const now = new Date();
-    const newTime = new Date(`${now.toDateString()} ${newTimeStr}`);
-    if (index > 0 && newTime <= runners[name][index - 1]) {
-        alert("New time must be after the previous lap time.");
-        return;
-    }
-    if (index < runners[name].length - 1 && newTime >= runners[name][index + 1]) {
-        alert("New time must be before the next lap time.");
-        return;
-    }
-    runners[name][index] = newTime;
-    updateTable();
-}_${index}`);
-    const newTimeStr = input.value;
-    if (!newTimeStr) return;
-    const now = new Date();
-    const newTime = new Date(`${now.toDateString()} ${newTimeStr}`);
-    if (index > 0 && newTime <= runners[name][index - 1]) {
-        alert("New time must be after the previous lap time.");
-        return;
-    }
-    if (index < runners[name].length - 1 && newTime >= runners[name][index + 1]) {
-        alert("New time must be before the next lap time.");
-        return;
-    }
-    runners[name][index] = newTime;
-    updateTable();
-}`).value;
-            if (!newTimeStr) return;
-            const now = new Date();
-            const newTime = new Date(`${now.toDateString()} ${newTimeStr}`);
-            if (index > 0 && newTime <= runners[currentRunner][index - 1]) {
-                alert("New time must be after the previous lap time.");
-                return;
-            }
-            if (index < runners[currentRunner].length - 1 && newTime >= runners[currentRunner][index + 1]) {
-                alert("New time must be before the next lap time.");
-                return;
-            }
-            runners[currentRunner][index] = newTime;
-            updateTable();
-        }
-function changeRunner() {
-            currentRunner = document.getElementById('runnerSelect').value;
-            updateTable();
-        }
+}
 
-        function deleteLap(name, index) {
+function deleteLap(name, index) {
     runners[name].splice(index, 1);
     updateTable();
-}</script>
+}
+</script>
 </body>
 </html>
