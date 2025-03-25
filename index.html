@@ -5,59 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Marathon Pace Tracker</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
+$1
+        .runner-badge {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 5px;
         }
-        .container {
-            max-width: 90vw;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        input {
-            width: 80%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px 20px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        table {
-            width: 100%;
-            max-width: 100%;
-            overflow-x: auto;
-            display: block;
-            max-width: 100%;
-            overflow-x: auto;
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: center;
-        }
-        th {
-            background: #28a745;
-            color: white;
-        }
-            .active {
-            background: #1e7e34;
-        }
-    </style>
+        .brandon { background-color: #007bff; }
+        .claire { background-color: #e83e8c; }
+        .derek { background-color: #ffc107; }
+        .mitch { background-color: #6f42c1; }
+</style>
 </head>
 <body onload='initializeLapTime()'>
 <div class="container">
@@ -198,13 +158,13 @@ let currentRunner = 'Mitch';
                 let comparisonText = comparison > 0 ? `+${formatTime(comparison, false)}` : `-${formatTime(Math.abs(comparison), false)}`;
                 
                 const row = `<tr>
-                    <td>${index + 1} (${name})</td>
+                    <td>${index + 1} (${name})<span class='runner-badge ${name.toLowerCase()}'></span></td>
                     <td>${displayDistance.toFixed(2)} ${paceUnit === 'miles' ? 'mi' : 'km'}</td>
                     <td>
-                        <span id="timeDisplay${index}">${time.toLocaleTimeString()}</span>
-                        <input type="time" id="timeInput${index}" style="display:none" value="${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}:${time.getSeconds().toString().padStart(2, '0')}">
-                        <button onclick="enableEdit(${index})">Edit</button>
-                        <button onclick="saveEdit(${index})" style="display:none" id="saveBtn${index}">Save</button>
+                        <span id="timeDisplay_${name}_${index}">${time.toLocaleTimeString()}</span>
+                        <input type="time" id="timeInput_${name}_${index}" style="display:none" value="${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}:${time.getSeconds().toString().padStart(2, '0')}">
+                        <button onclick="enableEdit('${name}', ${index})">Edit</button>
+                        <button onclick="saveEdit('${name}', ${index})" style="display:none" id="saveBtn_${name}_${index}">Save</button>
                     </td>
                     <td>${formatTime(lapElapsed)}</td>
                     <td>${formatTime(totalElapsed)}</td>
@@ -212,19 +172,73 @@ let currentRunner = 'Mitch';
                     <td>${avgPaceText}</td>
                     <td>${formatTime(projectedFinishElapsed)}</td>
                     <td>${comparisonText}</td>
-<td><button onclick="deleteLap(${index})">Delete</button></td>
+<td><button onclick="deleteLap('${name}', ${index})">Delete</button></td>
                 </tr>`;
                 tableBody.innerHTML += row;
             });
         }
-    function enableEdit(index) {
-            document.getElementById(`timeDisplay${index}`).style.display = 'none';
+    function enableEdit(name, index) {
+    document.getElementById(`timeDisplay_${name}_${index}`).style.display = 'none';
+    document.getElementById(`timeInput_${name}_${index}`).style.display = 'inline';
+    document.getElementById(`saveBtn_${name}_${index}`).style.display = 'inline';
+}}`).style.display = 'none';
+    document.getElementById(`timeInput_${name}_${index}`).style.display = 'inline';
+    document.getElementById(`saveBtn_${name}_${index}`).style.display = 'inline';
+}_${index}`).style.display = 'none';
+    document.getElementById(`timeInput_${name}_${index}`).style.display = 'inline';
+    document.getElementById(`saveBtn_${name}_${index}`).style.display = 'inline';
+}`).style.display = 'none';
             document.getElementById(`timeInput${index}`).style.display = 'inline';
             document.getElementById(`saveBtn${index}`).style.display = 'inline';
         }
 
-        function saveEdit(index) {
-            const newTimeStr = document.getElementById(`timeInput${index}`).value;
+        function saveEdit(name, index) {
+    const input = document.getElementById(`timeInput_${name}_${index}`);
+    const newTimeStr = input.value;
+    if (!newTimeStr) return;
+    const now = new Date();
+    const newTime = new Date(`${now.toDateString()} ${newTimeStr}`);
+    if (index > 0 && newTime <= runners[name][index - 1]) {
+        alert("New time must be after the previous lap time.");
+        return;
+    }
+    if (index < runners[name].length - 1 && newTime >= runners[name][index + 1]) {
+        alert("New time must be before the next lap time.");
+        return;
+    }
+    runners[name][index] = newTime;
+    updateTable();
+}}`);
+    const newTimeStr = input.value;
+    if (!newTimeStr) return;
+    const now = new Date();
+    const newTime = new Date(`${now.toDateString()} ${newTimeStr}`);
+    if (index > 0 && newTime <= runners[name][index - 1]) {
+        alert("New time must be after the previous lap time.");
+        return;
+    }
+    if (index < runners[name].length - 1 && newTime >= runners[name][index + 1]) {
+        alert("New time must be before the next lap time.");
+        return;
+    }
+    runners[name][index] = newTime;
+    updateTable();
+}_${index}`);
+    const newTimeStr = input.value;
+    if (!newTimeStr) return;
+    const now = new Date();
+    const newTime = new Date(`${now.toDateString()} ${newTimeStr}`);
+    if (index > 0 && newTime <= runners[name][index - 1]) {
+        alert("New time must be after the previous lap time.");
+        return;
+    }
+    if (index < runners[name].length - 1 && newTime >= runners[name][index + 1]) {
+        alert("New time must be before the next lap time.");
+        return;
+    }
+    runners[name][index] = newTime;
+    updateTable();
+}`).value;
             if (!newTimeStr) return;
             const now = new Date();
             const newTime = new Date(`${now.toDateString()} ${newTimeStr}`);
@@ -244,14 +258,9 @@ function changeRunner() {
             updateTable();
         }
 
-        function deleteLap(index) {
-            if (currentRunner === 'All') {
-                alert("Switch to a specific runner to delete a lap.");
-                return;
-            }
-            runners[currentRunner].splice(index, 1);
-            updateTable();
-        }
-    </script>
+        function deleteLap(name, index) {
+    runners[name].splice(index, 1);
+    updateTable();
+}</script>
 </body>
 </html>
