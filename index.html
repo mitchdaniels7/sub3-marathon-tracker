@@ -58,6 +58,7 @@
             background: #1e7e34;
         }
     </style>
+<script>
 </head>
 <body onload='initializeLapTime()'>
     <div class="container">
@@ -238,8 +239,7 @@ let currentRunner = 'Mitch';
             runners[currentRunner][index] = newTime;
             updateTable();
         }
-<script>
-        function changeRunner() {
+function changeRunner() {
             currentRunner = document.getElementById('runnerSelect').value;
             updateTable();
         }
@@ -253,5 +253,6 @@ let currentRunner = 'Mitch';
             updateTable();
         }
     </script>
+</script>
 </body>
 </html>
