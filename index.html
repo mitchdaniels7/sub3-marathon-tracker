@@ -120,8 +120,8 @@
             }
             lapTimes.push(lapTime);
             updateTable();
-            lapTimes = [...lapTimes];
-            input.value = "";
+            const updatedNow = new Date();
+            input.value = updatedNow.toTimeString().slice(0, 5);
         }
 
         function formatTime(seconds, forceHHMMSS = true) {
