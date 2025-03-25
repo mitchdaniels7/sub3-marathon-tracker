@@ -91,6 +91,16 @@ tr:nth-child(even) {
         padding: 1rem;
     }
     table {
+        font-size: 0.8rem;
+    }
+    th, td {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+        word-break: break-word;
+        white-space: normal;
+    }
+}
+    table {
         display: table;
         overflow-x: auto;
         font-size: 0.8rem;
@@ -151,6 +161,11 @@ tr:nth-child(even) {
         white-space: nowrap;
     }
 }
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
 </style>
 </head>
 <body onload='initializeLapTime()'>
@@ -172,6 +187,7 @@ tr:nth-child(even) {
         <p>Enter checkpoint distance (miles):</p>
         <input type="number" id="checkpointDistance" value="1.0" step="0.01" max="2.96">
         <button onclick="updateCheckpointDistance()">Set Distance</button>
+        <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
@@ -188,6 +204,7 @@ tr:nth-child(even) {
             </thead>
             <tbody id="lapTableBody"></tbody>
         </table>
+        </div>
 </div>
 <script>
 let runners = {
