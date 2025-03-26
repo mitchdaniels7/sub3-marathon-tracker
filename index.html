@@ -219,7 +219,7 @@ function addLapTime() {
     // Reset the input field to current time for next lap
     const updatedNow = new Date();
     input.value = updatedNow.toTimeString().slice(0, 5);
-    
+}
 
 function formatTime(seconds, forceHHMMSS = true) {
     let h = Math.floor(seconds / 3600);
