@@ -259,8 +259,9 @@ function updateTable() {
     let totalDistanceCovered = 0;
 
     lapTimesToDisplay.forEach(({ name, time, index }) => {
-        let lapElapsed = index === 0 ? checkpointDistance * sub3PacePerMile
-                                     : (runners[name][index] - runners[name][index - 1]) / 1000;
+        let lapElapsed = index === 0
+            ? checkpointDistance * sub3PacePerMile
+            : (time - lapTimesToDisplay[index - 1].time) / 1000;
         if (lapElapsed < 0 || isNaN(lapElapsed)) lapElapsed = 0;
         totalElapsed += lapElapsed;
         totalDistanceCovered = checkpointDistance + (index * 2.96);
@@ -277,7 +278,9 @@ function updateTable() {
         let avgPaceText = `${formatTime(avgPaceConverted, false)} ${paceUnit === 'miles' ? '/mi' : '/km'}`;
 
         let distanceRemaining = totalDistance - totalDistanceCovered;
-        if (paceUnit === 'km') distanceRemaining *= 1.609;
+        if (paceUnit === 'km') {
+            distanceRemaining *= 1.609;
+        }
 
         let projectedFinishElapsed = totalDistanceCovered > 0
             ? totalElapsed + (distanceRemaining * avgPaceConverted)
