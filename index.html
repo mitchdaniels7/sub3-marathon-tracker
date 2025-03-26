@@ -194,6 +194,32 @@ function initializeLapTime() {
 
 function addLapTime() {
     const input = document.getElementById('lapTime');
+    if (!input.value) {
+        alert('Please enter a valid time.');
+        return;
+    }
+    input.focus();
+    if (currentRunner === 'All') {
+        alert('Please select a specific runner to add lap times.');
+        return;
+    }
+
+    const timeValue = input.value;
+    const now = new Date();
+    const lapTime = new Date(`${now.toDateString()} ${timeValue}`);
+
+    if (runners[currentRunner].length > 0 && lapTime <= runners[currentRunner][runners[currentRunner].length - 1]) {
+        alert('Lap time must be later than the previous one.');
+        return;
+    }
+
+    runners[currentRunner].push(lapTime);
+    updateTable();
+
+    // Reset the input field to current time for next lap
+    const updatedNow = new Date();
+    input.value = updatedNow.toTimeString().slice(0, 5);
+}
     input.focus();
     input.focus();
     if (currentRunner === 'All') {
@@ -233,6 +259,7 @@ function setPaceUnit(unit) {
     document.getElementById('kmBtn').classList.remove('active');
     document.getElementById(unit + 'Btn').classList.add('active');
     updateTable();
+}
 }
 
 function changeRunner() {
