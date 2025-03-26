@@ -154,7 +154,7 @@ tr:nth-child(even) {
                 <tr>
                     <th style="min-width: 80px;">Lap</th>
                     <th style="min-width: 110px;">Elapsed Distance (<span id='distanceUnit'>Miles</span>)</th>
-                    <th>Time</th>
+                    <th style="min-width: 100px;">Time</th>
                     <th style="min-width: 90px;">Lap Time</th>
                     <th style="min-width: 100px;">Total Time</th>
                     <th style="min-width: 120px; white-space: pre-line;">Lap Pace</th>
@@ -304,7 +304,7 @@ function updateTable() {
             <td>${avgPaceText}</td>
             <td>${formatTime(projectedFinishElapsed)}</td>
             <td>${comparisonText}</td>
-            <td><button onclick="deleteLap('${name}', ${index})">Delete</button></td>
+            <td><button onclick="deleteLap('${name}', ${index})" style="background-color:#dc3545; color:white; padding:0.4rem 0.6rem; border-radius:4px; font-weight:bold;">×</button></td>
         </tr>`;
         tableBody.innerHTML += row;
     });
